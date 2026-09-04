@@ -4,6 +4,7 @@ import flet as ft
 
 from app.navegacion import DestinoPrincipal, EstadoNavegacion
 from components.barra_navegacion import BarraNavegacion
+from tema import COLOR_FONDO, crear_tema
 from views.vista_informativa import VistaPrincipal
 
 
@@ -29,6 +30,9 @@ class AplicacionMovil:
     def iniciar(self) -> None:
         self._page.title = "Clínica San Buenaventura"
         self._page.padding = 0
+        self._page.bgcolor = COLOR_FONDO
+        self._page.theme = crear_tema()
+        self._page.theme_mode = ft.ThemeMode.LIGHT
         self._page.navigation_bar = self._barra_navegacion.control
         self._mostrar_vista_actual()
         self._page.add(ft.SafeArea(content=self._contenido, expand=True))

@@ -1,0 +1,22 @@
+import flet as ft
+
+
+COLOR_PRIMARIO = "#0B6B63"
+COLOR_PRIMARIO_OSCURO = "#074B46"
+COLOR_PRIMARIO_SUAVE = "#DDF3EF"
+COLOR_AZUL = "#3278A8"
+COLOR_AZUL_SUAVE = "#E4F1FA"
+COLOR_ROJO = "#B74B55"
+COLOR_ROJO_SUAVE = "#FBEAEC"
+COLOR_FONDO = "#F4F8F7"
+COLOR_SUPERFICIE = "#FFFFFF"
+COLOR_BORDE = "#DCE8E6"
+COLOR_TEXTO_PRINCIPAL = "#183936"
+COLOR_TEXTO_SECUNDARIO = "#607572"
+
+
+def crear_tema() -> ft.Theme:
+    return ft.Theme(
+        color_scheme_seed=COLOR_PRIMARIO,
+        use_material3=True,
+    )

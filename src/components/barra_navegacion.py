@@ -4,6 +4,7 @@ from dataclasses import dataclass
 import flet as ft
 
 from app.navegacion import DestinoPrincipal
+from tema import COLOR_PRIMARIO_SUAVE, COLOR_SUPERFICIE
 
 
 @dataclass(frozen=True, slots=True)
@@ -47,6 +48,9 @@ class BarraNavegacion:
         self._al_seleccionar = al_seleccionar
         self._control = ft.NavigationBar(
             selected_index=self._indice_de(destino_seleccionado),
+            bgcolor=COLOR_SUPERFICIE,
+            indicator_color=COLOR_PRIMARIO_SUAVE,
+            elevation=2,
             label_behavior=ft.NavigationBarLabelBehavior.ALWAYS_SHOW,
             on_change=self._manejar_cambio,
             destinations=[
