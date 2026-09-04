@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "flet": {
+      "command": "uv",
+      "args": [
+        "--directory",
+        ".",
+        "run",
+        "flet",
+        "mcp"
+      ],
+      "env": {
+        "FLET_MCP_ENABLE_EXAMPLES": "1",
+        "FLET_MCP_ENABLE_CLI": "1"
+      }
+    }
+  }
+}
