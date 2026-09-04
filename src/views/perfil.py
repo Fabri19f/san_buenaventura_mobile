@@ -1,5 +1,7 @@
 import flet as ft
 
+from app.navegador_pila import NavegadorAplicacion
+from app.rutas import RutaSecundaria
 from components.encabezado_seccion import EncabezadoSeccion
 from components.seccion_accesos import SeccionAccesos
 from components.tarjeta_acceso import TarjetaAcceso
@@ -22,7 +24,7 @@ from tema import (
 class VistaPerfil:
     """Presenta la estructura de cuenta sin asumir datos editables."""
 
-    def __init__(self) -> None:
+    def __init__(self, navegador: NavegadorAplicacion) -> None:
         self._control = ft.Container(
             expand=True,
             padding=20,
@@ -39,7 +41,7 @@ class VistaPerfil:
                         color_fondo_icono=COLOR_AZUL_SUAVE,
                     ).control,
                     self._crear_identidad(),
-                    self._crear_opciones_cuenta(),
+                    self._crear_opciones_cuenta(navegador),
                     TarjetaAviso(
                         titulo="Privacidad por diseño",
                         descripcion=(
@@ -104,7 +106,9 @@ class VistaPerfil:
         )
 
     @staticmethod
-    def _crear_opciones_cuenta() -> ft.Control:
+    def _crear_opciones_cuenta(
+        navegador: NavegadorAplicacion,
+    ) -> ft.Control:
         return SeccionAccesos(
             titulo="Cuenta",
             descripcion="Opciones relacionadas con tu perfil y acceso.",
@@ -115,6 +119,9 @@ class VistaPerfil:
                     icono=ft.Icons.CONTACT_PAGE,
                     color_icono=COLOR_PRIMARIO,
                     color_fondo_icono=COLOR_PRIMARIO_SUAVE,
+                    al_seleccionar=lambda: navegador.abrir(
+                        RutaSecundaria.INFORMACION_PERSONAL
+                    ),
                 ),
                 TarjetaAcceso(
                     titulo="Seguridad y acceso",

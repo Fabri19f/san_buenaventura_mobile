@@ -1,5 +1,8 @@
 import flet as ft
 
+from app.navegador_pila import NavegadorAplicacion
+from app.navegacion import DestinoPrincipal
+from app.rutas import RutaSecundaria
 from components.seccion_accesos import SeccionAccesos
 from components.tarjeta_acceso import TarjetaAcceso
 from components.tarjeta_aviso import TarjetaAviso
@@ -20,7 +23,7 @@ from tema import (
 class VistaInicio:
     """Presenta el resumen inicial del paciente sin datos simulados."""
 
-    def __init__(self) -> None:
+    def __init__(self, navegador: NavegadorAplicacion) -> None:
         self._control = ft.Container(
             expand=True,
             padding=20,
@@ -31,7 +34,7 @@ class VistaInicio:
                 controls=[
                     self._crear_cabecera(),
                     self._crear_resumen_proxima_cita(),
-                    self._crear_gestiones(),
+                    self._crear_gestiones(navegador),
                     self._crear_aviso_privacidad(),
                 ],
             ),
@@ -136,7 +139,7 @@ class VistaInicio:
         )
 
     @staticmethod
-    def _crear_gestiones() -> ft.Control:
+    def _crear_gestiones(navegador: NavegadorAplicacion) -> ft.Control:
         return SeccionAccesos(
             titulo="Gestiones de citas",
             descripcion="Todo lo necesario para organizar tu atención.",
@@ -147,6 +150,9 @@ class VistaInicio:
                     icono=ft.Icons.EVENT,
                     color_icono=COLOR_AZUL,
                     color_fondo_icono=COLOR_AZUL_SUAVE,
+                    al_seleccionar=lambda: navegador.ir_a_destino(
+                        DestinoPrincipal.CITAS
+                    ),
                 ),
                 TarjetaAcceso(
                     titulo="Solicitar una cita",
@@ -154,6 +160,9 @@ class VistaInicio:
                     icono=ft.Icons.MORE_TIME,
                     color_icono=COLOR_PRIMARIO,
                     color_fondo_icono=COLOR_PRIMARIO_SUAVE,
+                    al_seleccionar=lambda: navegador.abrir(
+                        RutaSecundaria.SOLICITAR_CITA
+                    ),
                 ),
                 TarjetaAcceso(
                     titulo="Cancelar una cita",
@@ -161,6 +170,9 @@ class VistaInicio:
                     icono=ft.Icons.EVENT_BUSY,
                     color_icono=COLOR_ROJO,
                     color_fondo_icono=COLOR_ROJO_SUAVE,
+                    al_seleccionar=lambda: navegador.ir_a_destino(
+                        DestinoPrincipal.CITAS
+                    ),
                 ),
             ),
         ).control

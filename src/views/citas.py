@@ -1,5 +1,7 @@
 import flet as ft
 
+from app.navegador_pila import NavegadorAplicacion
+from app.rutas import RutaSecundaria
 from components.encabezado_seccion import EncabezadoSeccion
 from components.seccion_accesos import SeccionAccesos
 from components.tarjeta_acceso import TarjetaAcceso
@@ -21,7 +23,7 @@ from tema import (
 class VistaCitas:
     """Presenta el espacio de gestión de citas sin operaciones reales."""
 
-    def __init__(self) -> None:
+    def __init__(self, navegador: NavegadorAplicacion) -> None:
         self._control = ft.Container(
             expand=True,
             padding=20,
@@ -38,17 +40,17 @@ class VistaCitas:
                         color_fondo_icono=COLOR_PRIMARIO_SUAVE,
                     ).control,
                     self._crear_estado_citas(),
-                    self._crear_acciones(),
+                    self._crear_acciones(navegador),
                     TarjetaAviso(
-                        titulo="Gestiones seguras",
+                        titulo="¿Necesitas cancelar una cita?",
                         descripcion=(
-                            "La disponibilidad y las condiciones de cancelación "
-                            "serán validadas por la clínica."
+                            "Selecciona primero una cita programada; la opción de "
+                            "cancelación estará dentro de su detalle."
                         ),
-                        icono=ft.Icons.FACT_CHECK,
-                        color_icono=COLOR_AZUL,
+                        icono=ft.Icons.EVENT_BUSY,
+                        color_icono=COLOR_ROJO,
                         color_titulo=COLOR_TEXTO_PRINCIPAL,
-                        color_fondo=COLOR_AZUL_SUAVE,
+                        color_fondo=COLOR_ROJO_SUAVE,
                     ).control,
                 ],
             ),
@@ -105,31 +107,20 @@ class VistaCitas:
         )
 
     @staticmethod
-    def _crear_acciones() -> ft.Control:
+    def _crear_acciones(navegador: NavegadorAplicacion) -> ft.Control:
         return SeccionAccesos(
-            titulo="¿Qué deseas hacer?",
-            descripcion="Elige una gestión relacionada con tus citas.",
+            titulo="Nueva gestión",
+            descripcion="Inicia una solicitud desde esta sección.",
             accesos=(
-                TarjetaAcceso(
-                    titulo="Consultar mis citas",
-                    descripcion="Revisa tus citas y su información principal.",
-                    icono=ft.Icons.EVENT_NOTE,
-                    color_icono=COLOR_AZUL,
-                    color_fondo_icono=COLOR_AZUL_SUAVE,
-                ),
                 TarjetaAcceso(
                     titulo="Solicitar una cita",
                     descripcion="Inicia una nueva solicitud de atención.",
                     icono=ft.Icons.MORE_TIME,
                     color_icono=COLOR_PRIMARIO,
                     color_fondo_icono=COLOR_PRIMARIO_SUAVE,
-                ),
-                TarjetaAcceso(
-                    titulo="Cancelar una cita",
-                    descripcion="Gestiona una cita que ya fue programada.",
-                    icono=ft.Icons.EVENT_BUSY,
-                    color_icono=COLOR_ROJO,
-                    color_fondo_icono=COLOR_ROJO_SUAVE,
+                    al_seleccionar=lambda: navegador.abrir(
+                        RutaSecundaria.SOLICITAR_CITA
+                    ),
                 ),
             ),
         ).control
