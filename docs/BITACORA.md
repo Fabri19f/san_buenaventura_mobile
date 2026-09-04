@@ -8,10 +8,10 @@ verificó.
 ## Estado de corte
 
 - **Fecha:** 4 de septiembre de 2026.
-- **Entrega actual:** barra de navegación funcional.
+- **Entrega actual:** navegación funcional y diseño estático de Inicio.
 - **Destinos principales:** `Inicio`, `Citas` y `Perfil`.
 - **Tecnologías:** Python 3.14, Flet 0.86.5 y uv.
-- **Pruebas automatizadas:** 9 aprobadas.
+- **Pruebas automatizadas:** 10 aprobadas.
 - **Integraciones externas:** ninguna.
 
 ## Registro cronológico
@@ -88,6 +88,28 @@ alineaciones, iconos y `ft.run`.
 - Se evitó arrancar la interfaz completa para probar comportamiento que puede
   aislarse de forma determinista.
 
+### 6. Diseño visual de la pantalla Inicio
+
+**Fecha:** 4 de septiembre de 2026
+
+**Commit:** `c67b2fa` — `feat: diseña la pantalla de inicio`
+
+- Se sustituyó la vista informativa de Inicio por una vista especializada.
+- Se creó una cabecera institucional con una bienvenida neutral que no depende
+  de autenticación ni inventa la identidad del paciente.
+- Se añadió un espacio visual para la próxima cita sin fechas, profesionales o
+  datos simulados.
+- Se representaron las tres gestiones permitidas: ver, solicitar y cancelar
+  citas. Las tarjetas todavía no registran eventos ni ejecutan acciones.
+- Se incorporó un aviso de privacidad limitado a la gestión de citas.
+- Se extrajeron la paleta visual y el componente reutilizable de acceso para
+  mantener consistencia sin duplicar estilos.
+- Se fijó un tema Material 3 claro y se armonizó la barra de navegación con la
+  nueva identidad visual.
+- Se añadió una prueba de composición para garantizar que Inicio utilice su
+  vista especializada mientras Citas y Perfil mantienen el alcance anterior.
+- Se verificó la API empleada con Flet MCP para Flet 0.86.5.
+
 ## Decisiones arquitectónicas vigentes
 
 1. La única fuente de estado semántico es `EstadoNavegacion`; el índice de Flet
@@ -107,16 +129,20 @@ alineaciones, iconos y `ft.run`.
 ```text
 src/
 ├── main.py
+├── tema.py
 ├── app/
 │   ├── aplicacion.py
 │   └── navegacion.py
 ├── components/
-│   └── barra_navegacion.py
+│   ├── barra_navegacion.py
+│   └── tarjeta_acceso.py
 └── views/
+    ├── inicio.py
     └── vista_informativa.py
 
 tests/
 ├── test_aplicacion.py
+├── test_composicion.py
 └── test_navegacion.py
 ```
 
@@ -134,7 +160,7 @@ uv run flet run src/main.py
 Resultado relevante de pruebas:
 
 ```text
-9 passed
+10 passed
 ```
 
 La aplicación inició sin excepciones y se comprobó que los tres destinos
