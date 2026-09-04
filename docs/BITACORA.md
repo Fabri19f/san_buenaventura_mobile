@@ -8,7 +8,7 @@ verificó.
 ## Estado de corte
 
 - **Fecha:** 4 de septiembre de 2026.
-- **Entrega actual:** navegación funcional y diseño estático de Inicio.
+- **Entrega actual:** navegación funcional y diseño estático de las tres vistas.
 - **Destinos principales:** `Inicio`, `Citas` y `Perfil`.
 - **Tecnologías:** Python 3.14, Flet 0.86.5 y uv.
 - **Pruebas automatizadas:** 10 aprobadas.
@@ -110,6 +110,31 @@ alineaciones, iconos y `ft.run`.
   vista especializada mientras Citas y Perfil mantienen el alcance anterior.
 - Se verificó la API empleada con Flet MCP para Flet 0.86.5.
 
+### 7. Diseño visual de Citas y Perfil
+
+**Fecha:** 4 de septiembre de 2026
+
+**Commit:** `00fccd6` — `feat: diseña las vistas de citas y perfil`
+
+- Se reemplazaron las vistas informativas restantes por `VistaCitas` y
+  `VistaPerfil`.
+- Citas concentra visualmente la consulta, solicitud y cancelación de citas sin
+  implementar formularios, reglas de negocio, datos simulados ni callbacks.
+- Se incorporó un espacio neutral para mostrar citas cuando existan datos
+  reales y un aviso de que las reglas serán validadas por la clínica.
+- Perfil presenta la estructura de cuenta y sesión sin decidir campos editables,
+  credenciales o mecanismos de autenticación.
+- Se evitó mostrar información clínica y se hizo explícita esa restricción en la
+  presentación de privacidad.
+- Se extrajeron `EncabezadoSeccion`, `SeccionAccesos` y `TarjetaAviso` como
+  componentes compartidos por las vistas.
+- El contrato `VistaPrincipal` se trasladó a un módulo propio y se eliminó la
+  vista genérica, que dejó de representar una responsabilidad real.
+- Las pruebas de composición ahora verifican que los tres destinos utilicen sus
+  respectivas vistas especializadas.
+- Los controles e iconos empleados fueron contrastados con Flet MCP para Flet
+  0.86.5.
+
 ## Decisiones arquitectónicas vigentes
 
 1. La única fuente de estado semántico es `EstadoNavegacion`; el índice de Flet
@@ -135,10 +160,15 @@ src/
 │   └── navegacion.py
 ├── components/
 │   ├── barra_navegacion.py
-│   └── tarjeta_acceso.py
+│   ├── encabezado_seccion.py
+│   ├── seccion_accesos.py
+│   ├── tarjeta_acceso.py
+│   └── tarjeta_aviso.py
 └── views/
+    ├── citas.py
+    ├── contratos.py
     ├── inicio.py
-    └── vista_informativa.py
+    └── perfil.py
 
 tests/
 ├── test_aplicacion.py
