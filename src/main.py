@@ -2,21 +2,17 @@ import flet as ft
 
 from app.aplicacion import AplicacionMovil
 from app.navegacion import DestinoPrincipal, EstadoNavegacion
+from views.citas import VistaCitas
+from views.contratos import VistaPrincipal
 from views.inicio import VistaInicio
-from views.vista_informativa import VistaInformativa, VistaPrincipal
+from views.perfil import VistaPerfil
 
 
 def crear_vistas_principales() -> dict[DestinoPrincipal, VistaPrincipal]:
     return {
         DestinoPrincipal.INICIO: VistaInicio(),
-        DestinoPrincipal.CITAS: VistaInformativa(
-            titulo="Citas",
-            descripcion="Esta es la sección destinada a tus citas.",
-        ),
-        DestinoPrincipal.PERFIL: VistaInformativa(
-            titulo="Perfil",
-            descripcion="Esta es la sección destinada a tu perfil.",
-        ),
+        DestinoPrincipal.CITAS: VistaCitas(),
+        DestinoPrincipal.PERFIL: VistaPerfil(),
     }
 
 

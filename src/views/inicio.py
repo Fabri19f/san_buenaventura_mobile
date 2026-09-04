@@ -1,6 +1,8 @@
 import flet as ft
 
+from components.seccion_accesos import SeccionAccesos
 from components.tarjeta_acceso import TarjetaAcceso
+from components.tarjeta_aviso import TarjetaAviso
 from tema import (
     COLOR_AZUL,
     COLOR_AZUL_SUAVE,
@@ -135,87 +137,43 @@ class VistaInicio:
 
     @staticmethod
     def _crear_gestiones() -> ft.Control:
-        accesos = (
-            TarjetaAcceso(
-                titulo="Ver mis citas",
-                descripcion="Consulta tus citas programadas.",
-                icono=ft.Icons.EVENT,
-                color_icono=COLOR_AZUL,
-                color_fondo_icono=COLOR_AZUL_SUAVE,
-            ),
-            TarjetaAcceso(
-                titulo="Solicitar una cita",
-                descripcion="Inicia una nueva solicitud de atención.",
-                icono=ft.Icons.MORE_TIME,
-                color_icono=COLOR_PRIMARIO,
-                color_fondo_icono=COLOR_PRIMARIO_SUAVE,
-            ),
-            TarjetaAcceso(
-                titulo="Cancelar una cita",
-                descripcion="Gestiona una cita que ya fue programada.",
-                icono=ft.Icons.EVENT_BUSY,
-                color_icono=COLOR_ROJO,
-                color_fondo_icono=COLOR_ROJO_SUAVE,
-            ),
-        )
-
-        return ft.Column(
-            spacing=12,
-            controls=[
-                ft.Column(
-                    spacing=3,
-                    controls=[
-                        ft.Text(
-                            "Gestiones de citas",
-                            color=COLOR_TEXTO_PRINCIPAL,
-                            size=20,
-                            weight=ft.FontWeight.BOLD,
-                        ),
-                        ft.Text(
-                            "Todo lo necesario para organizar tu atención.",
-                            color=COLOR_TEXTO_SECUNDARIO,
-                            size=13,
-                        ),
-                    ],
+        return SeccionAccesos(
+            titulo="Gestiones de citas",
+            descripcion="Todo lo necesario para organizar tu atención.",
+            accesos=(
+                TarjetaAcceso(
+                    titulo="Ver mis citas",
+                    descripcion="Consulta tus citas programadas.",
+                    icono=ft.Icons.EVENT,
+                    color_icono=COLOR_AZUL,
+                    color_fondo_icono=COLOR_AZUL_SUAVE,
                 ),
-                *(acceso.control for acceso in accesos),
-            ],
-        )
+                TarjetaAcceso(
+                    titulo="Solicitar una cita",
+                    descripcion="Inicia una nueva solicitud de atención.",
+                    icono=ft.Icons.MORE_TIME,
+                    color_icono=COLOR_PRIMARIO,
+                    color_fondo_icono=COLOR_PRIMARIO_SUAVE,
+                ),
+                TarjetaAcceso(
+                    titulo="Cancelar una cita",
+                    descripcion="Gestiona una cita que ya fue programada.",
+                    icono=ft.Icons.EVENT_BUSY,
+                    color_icono=COLOR_ROJO,
+                    color_fondo_icono=COLOR_ROJO_SUAVE,
+                ),
+            ),
+        ).control
 
     @staticmethod
     def _crear_aviso_privacidad() -> ft.Control:
-        return ft.Container(
-            bgcolor=COLOR_PRIMARIO_SUAVE,
-            border_radius=18,
-            padding=16,
-            content=ft.Row(
-                spacing=12,
-                vertical_alignment=ft.CrossAxisAlignment.CENTER,
-                controls=[
-                    ft.Icon(
-                        icon=ft.Icons.SHIELD,
-                        color=COLOR_PRIMARIO,
-                        size=24,
-                        semantics_label="Protección de información",
-                    ),
-                    ft.Column(
-                        expand=True,
-                        spacing=3,
-                        controls=[
-                            ft.Text(
-                                "Tu información, protegida",
-                                color=COLOR_PRIMARIO_OSCURO,
-                                size=14,
-                                weight=ft.FontWeight.W_600,
-                            ),
-                            ft.Text(
-                                "La aplicación se enfoca únicamente en la gestión "
-                                "de tus citas.",
-                                color=COLOR_TEXTO_SECUNDARIO,
-                                size=12,
-                            ),
-                        ],
-                    ),
-                ],
+        return TarjetaAviso(
+            titulo="Tu información, protegida",
+            descripcion=(
+                "La aplicación se enfoca únicamente en la gestión de tus citas."
             ),
-        )
+            icono=ft.Icons.SHIELD,
+            color_icono=COLOR_PRIMARIO,
+            color_titulo=COLOR_PRIMARIO_OSCURO,
+            color_fondo=COLOR_PRIMARIO_SUAVE,
+        ).control

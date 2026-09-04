@@ -5,12 +5,21 @@ import pytest
 
 from app.aplicacion import AplicacionMovil
 from app.navegacion import DestinoPrincipal, EstadoNavegacion
-from views.vista_informativa import VistaInformativa, VistaPrincipal
+from views.contratos import VistaPrincipal
+
+
+class VistaPrueba:
+    def __init__(self, nombre: str) -> None:
+        self._control = ft.Text(nombre)
+
+    @property
+    def control(self) -> ft.Control:
+        return self._control
 
 
 def crear_vistas() -> dict[DestinoPrincipal, VistaPrincipal]:
     return {
-        destino: VistaInformativa(destino.value, f"Vista {destino.value}")
+        destino: VistaPrueba(f"Vista {destino.value}")
         for destino in DestinoPrincipal
     }
 

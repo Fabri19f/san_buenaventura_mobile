@@ -5,7 +5,7 @@ import flet as ft
 from app.navegacion import DestinoPrincipal, EstadoNavegacion
 from components.barra_navegacion import BarraNavegacion
 from tema import COLOR_FONDO, crear_tema
-from views.vista_informativa import VistaPrincipal
+from views.contratos import VistaPrincipal
 
 
 class AplicacionMovil:
