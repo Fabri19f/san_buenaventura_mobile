@@ -113,22 +113,27 @@ inventes edición de datos personales antes de resolverlo.
 
 ## 5. Estado actual de la entrega [DECISIÓN]
 
-La entrega inmediata de Apps Móviles II requiere **únicamente una barra de
-navegación funcional**.
+La iteración actual de Apps Móviles II requiere un **prototipo visual
+navegable**, todavía sin integración ni operaciones reales.
 
 En este estado:
 
-- implementar `Inicio`, `Citas` y `Perfil`;
-- al pulsar cada destino debe cambiar la vista;
-- el destino seleccionado debe reflejarse visualmente;
+- mantener `Inicio`, `Citas` y `Perfil` como únicos destinos principales;
+- usar navegación en pila para pantallas secundarias;
+- tratar `Citas` como la consulta/listado, sin duplicarla en otra pantalla;
+- abrir `Solicitar cita` sobre `Citas` como un flujo secundario;
+- iniciar la futura cancelación desde el detalle de una cita seleccionada;
+- abrir `Información personal` sobre `Perfil` sin habilitar edición;
+- mantener coherentes la ruta, la vista raíz y el destino seleccionado;
+- permitir el retroceso desde una pantalla secundaria;
 - no implementar autenticación;
 - no consumir la API Laravel;
-- no crear formularios reales de citas;
+- no crear formularios ni operaciones reales de citas;
 - no crear datos simulados innecesarios;
 - no adelantar funcionalidades de futuras entregas.
 
-La entrega se considera funcional si la navegación cambia de pantalla sin errores
-y mantiene correctamente el estado del destino seleccionado.
+La entrega se considera funcional si permite recorrer las raíces y las pantallas
+secundarias definidas sin errores, preservando el contexto de navegación.
 
 Cuando la materia solicite una funcionalidad nueva, actualiza esta sección en vez
 de dejar a los agentes adivinar cuál es el objetivo de la semana.

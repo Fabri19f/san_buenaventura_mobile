@@ -8,10 +8,12 @@ verificó.
 ## Estado de corte
 
 - **Fecha:** 4 de septiembre de 2026.
-- **Entrega actual:** navegación funcional y diseño estático de las tres vistas.
+- **Entrega actual:** prototipo visual con navegación principal y secundaria en
+  pila.
 - **Destinos principales:** `Inicio`, `Citas` y `Perfil`.
+- **Pantallas secundarias:** `Solicitar cita` e `Información personal`.
 - **Tecnologías:** Python 3.14, Flet 0.86.5 y uv.
-- **Pruebas automatizadas:** 10 aprobadas.
+- **Pruebas automatizadas:** 28 aprobadas.
 - **Integraciones externas:** ninguna.
 
 ## Registro cronológico
@@ -135,18 +137,52 @@ alineaciones, iconos y `ft.run`.
 - Los controles e iconos empleados fueron contrastados con Flet MCP para Flet
   0.86.5.
 
+### 8. Navegación móvil en pila y pantallas secundarias
+
+**Fecha:** 4 de septiembre de 2026
+
+**Commit:** `c7f95fe` — `feat: agrega navegacion movil en pila`
+
+- Se adoptaron rutas de Flet y una pila de `View` para conservar las tres
+  pestañas como raíces y presentar las tareas secundarias con retroceso nativo.
+- `Citas` quedó como pantalla de consulta/listado. No se creó una segunda
+  pantalla de “Consultar citas” que obligaría al paciente a realizar un toque
+  adicional para llegar al contenido principal de la sección.
+- `Solicitar cita` se diseñó como una pantalla secundaria con un proceso guiado
+  de tres etapas. Permanece informativa: no consulta horarios ni envía datos.
+- La cancelación no recibió una pantalla aislada. El flujo se iniciará desde el
+  detalle de la cita elegida para evitar acciones sin contexto; hasta disponer
+  de citas reales, la interfaz guía al paciente hacia el listado.
+- `Información personal` se diseñó como pantalla secundaria de Perfil sin
+  inventar campos editables, credenciales o datos del paciente.
+- Los accesos rápidos de Inicio y las acciones habilitadas en cada raíz ahora
+  delegan en un navegador mediante un contrato explícito.
+- Se separaron la traducción de intenciones a rutas, el catálogo de rutas y la
+  coordinación de la pila para que las vistas no dependan directamente de
+  `Page`.
+- Se añadieron pruebas de rutas, apilado, retroceso, composición y delegación de
+  eventos de las tarjetas interactivas.
+- Las rutas desconocidas se normalizan a la raíz segura más cercana en vez de
+  dejar incoherentes la URL, el contenido y el destino seleccionado.
+- La API de `View`, `AppBar`, rutas, retroceso, controles e iconos se contrastó
+  con Flet MCP para Flet 0.86.5.
+
 ## Decisiones arquitectónicas vigentes
 
 1. La única fuente de estado semántico es `EstadoNavegacion`; el índice de Flet
    es una representación visual administrada por `BarraNavegacion`.
 2. La composición de dependencias es manual y explícita porque el tamaño actual
    no justifica un contenedor de inyección.
-3. Las vistas actuales comparten una implementación informativa porque todavía
-   no tienen comportamiento diferente. El contrato `VistaPrincipal` permite
-   sustituirlas sin modificar el coordinador.
-4. Flet se limita a presentación y estado de interfaz. Las futuras reglas de
+3. Las vistas principales y las pantallas secundarias tienen contratos
+   estructurales separados; la aplicación coordina catálogos completos de ambos
+   tipos sin conocer sus implementaciones concretas.
+4. `NavegadorPila` traduce intenciones semánticas a rutas de Flet. Las vistas
+   reciben ese contrato y no conocen ni modifican directamente `Page`.
+5. `Citas` es la consulta principal. Solicitar requiere una pantalla propia y
+   cancelar requerirá primero seleccionar una cita y abrir su detalle.
+6. Flet se limita a presentación y estado de interfaz. Las futuras reglas de
    citas pertenecerán a Laravel.
-5. No se crean capas, servicios, clientes o modelos hasta que exista una
+7. No se crean capas, servicios, clientes o modelos hasta que exista una
    responsabilidad real que los necesite.
 
 ## Estructura actual relevante
@@ -157,7 +193,9 @@ src/
 ├── tema.py
 ├── app/
 │   ├── aplicacion.py
-│   └── navegacion.py
+│   ├── navegacion.py
+│   ├── navegador_pila.py
+│   └── rutas.py
 ├── components/
 │   ├── barra_navegacion.py
 │   ├── encabezado_seccion.py
@@ -167,13 +205,17 @@ src/
 └── views/
     ├── citas.py
     ├── contratos.py
+    ├── informacion_personal.py
     ├── inicio.py
-    └── perfil.py
+    ├── perfil.py
+    └── solicitar_cita.py
 
 tests/
 ├── test_aplicacion.py
+├── test_componentes.py
 ├── test_composicion.py
-└── test_navegacion.py
+├── test_navegacion.py
+└── test_rutas.py
 ```
 
 ## Verificación del estado de corte
@@ -190,11 +232,13 @@ uv run flet run src/main.py
 Resultado relevante de pruebas:
 
 ```text
-10 passed
+28 passed
 ```
 
-La aplicación inició sin excepciones y se comprobó que los tres destinos
-actualizan el contenido y el estado seleccionado.
+La aplicación inició sin excepciones. Las pruebas comprueban que los tres
+destinos actualizan el contenido y el estado seleccionado, que las rutas
+secundarias se apilan sobre la raíz correcta y que el retroceso restaura la ruta
+anterior.
 
 ## Fuera del alcance actual
 

@@ -38,9 +38,10 @@ Consecuencias:
 
 ## Estado actual de la entrega
 
-La entrega actual requiere **únicamente una barra de navegación funcional**.
+La iteración actual requiere un **prototipo visual navegable** con navegación
+principal y pantallas secundarias en pila.
 
-Implementar exactamente estos destinos principales:
+Mantener exactamente estos destinos principales:
 
 - `Inicio`
 - `Citas`
@@ -52,14 +53,26 @@ Al pulsar cada destino:
 - debe reflejarse correctamente el destino seleccionado;
 - la app no debe producir errores.
 
+La composición actual de los flujos es:
+
+- `Citas` funciona también como pantalla de consulta/listado;
+- `Solicitar cita` se abre como pantalla secundaria sobre `Citas`;
+- la cancelación partirá del detalle de una cita concreta y no de una pantalla
+  aislada sin contexto;
+- `Información personal` se abre como pantalla secundaria sobre `Perfil`.
+
+Las rutas secundarias deben poder cerrarse con la navegación de retroceso y no
+deben añadir nuevos destinos a la barra principal.
+
 Por ahora **no implementar**:
 
 - autenticación;
 - consumo de API;
-- formularios reales de citas;
+- formularios ni operaciones reales de citas;
 - mocks de red innecesarios;
 - persistencia de sesión;
 - funcionalidades clínicas;
+- datos simulados para hacer aparentar integraciones inexistentes;
 - arquitectura especulativa para entregas futuras.
 
 No adelantar funcionalidades aunque parezcan fáciles.
