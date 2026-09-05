@@ -8,11 +8,11 @@ from app.rutas import RutaSecundaria, ruta_principal
 
 class NavegadorAplicacion(Protocol):
     def ir_a_destino(self, destino: DestinoPrincipal) -> None:
-        """Cambia una raíz de navegación por otra."""
+        """Selecciona una pestaña dentro de la vista raíz persistente."""
         ...
 
     def abrir(self, ruta: RutaSecundaria) -> None:
-        """Apila una pantalla secundaria sobre su destino principal."""
+        """Apila una pantalla secundaria conservando la vista de origen."""
         ...
 
 
@@ -23,7 +23,7 @@ class NavegadorPila:
         self._page = page
 
     def ir_a_destino(self, destino: DestinoPrincipal) -> None:
-        self._page.go(ruta_principal(destino))
+        self._page.navigate(ruta_principal(destino))
 
     def abrir(self, ruta: RutaSecundaria) -> None:
         self._page.navigate(ruta.value)

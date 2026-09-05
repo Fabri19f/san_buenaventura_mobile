@@ -36,6 +36,7 @@ def main(page: ft.Page) -> None:
         estado_navegacion=EstadoNavegacion(),
         vistas=crear_vistas_principales(navegador),
         pantallas=crear_pantallas_secundarias(),
+        navegador=navegador,
     )
     aplicacion.iniciar()
 

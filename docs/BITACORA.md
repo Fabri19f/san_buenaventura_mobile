@@ -13,7 +13,7 @@ verificó.
 - **Destinos principales:** `Inicio`, `Citas` y `Perfil`.
 - **Pantallas secundarias:** `Solicitar cita` e `Información personal`.
 - **Tecnologías:** Python 3.14, Flet 0.86.5 y uv.
-- **Pruebas automatizadas:** 28 aprobadas.
+- **Pruebas automatizadas:** 48 aprobadas.
 - **Integraciones externas:** ninguna.
 
 ## Registro cronológico
@@ -167,16 +167,42 @@ alineaciones, iconos y `ft.run`.
 - La API de `View`, `AppBar`, rutas, retroceso, controles e iconos se contrastó
   con Flet MCP para Flet 0.86.5.
 
+### 9. Corrección de la pila y revisión de la API de navegación
+
+**Fecha:** 4 de septiembre de 2026
+
+- Las pestañas conservan una única `View` raíz con ruta fija `/` y reemplazan
+  su contenido. Flet 0.86.5 usa `View.route` como identidad de la página de
+  Flutter; cambiarla provocaba transiciones al seleccionar otra pestaña.
+- Las pantallas secundarias conservan la vista de origen: la solicitud abierta
+  desde Inicio vuelve a Inicio. Los enlaces directos usan la sección asociada
+  como contexto inicial de retorno.
+- El retroceso conserva las vistas inferiores e ignora eventos repetidos,
+  referencias ajenas y solicitudes de eliminar la raíz.
+- Se sustituyó `Page.go()`, deprecado, por `Page.navigate()` en los callbacks
+  síncronos. El retroceso mantiene `await Page.push_route()`, de acuerdo con
+  la [API de navegación de Flet](https://flet.dev/docs/controls/page/#navigate).
+- La barra principal y los accesos de las vistas reciben el mismo navegador
+  desde `main.py`, eliminando la traducción duplicada de destinos a rutas.
+- Se valida que cada pantalla declare la ruta bajo la que está registrada.
+- Se repararon referencias incompletas a `page.go` que rompían la sintaxis de
+  las pruebas. Las advertencias de deprecación ahora se tratan como errores.
+- Se añadieron pruebas de composición con `Page` y `navigate()` reales,
+  sustituyendo únicamente la comunicación con Flutter y las actualizaciones
+  gráficas. Estas pruebas verifican la API y los recorridos, no las animaciones.
+
 ## Decisiones arquitectónicas vigentes
 
-1. La única fuente de estado semántico es `EstadoNavegacion`; el índice de Flet
-   es una representación visual administrada por `BarraNavegacion`.
+1. `EstadoNavegacion` conserva el destino principal; el índice de Flet es una
+   representación visual administrada por `BarraNavegacion`. La pila reside
+   en `page.views` y solo `AplicacionMovil` la modifica.
 2. La composición de dependencias es manual y explícita porque el tamaño actual
    no justifica un contenedor de inyección.
 3. Las vistas principales y las pantallas secundarias tienen contratos
    estructurales separados; la aplicación coordina catálogos completos de ambos
    tipos sin conocer sus implementaciones concretas.
-4. `NavegadorPila` traduce intenciones semánticas a rutas de Flet. Las vistas
+4. `NavegadorPila` traduce intenciones semánticas a rutas de Flet. La barra y las
+   vistas comparten la misma instancia, compuesta en `main.py`. Las vistas
    reciben ese contrato y no conocen ni modifican directamente `Page`.
 5. `Citas` es la consulta principal. Solicitar requiere una pantalla propia y
    cancelar requerirá primero seleccionar una cita y abrir su detalle.
@@ -223,8 +249,8 @@ tests/
 Se ejecutaron satisfactoriamente:
 
 ```bash
-uv sync
-uv run pytest
+uv sync --locked
+uv run pytest -q
 uv run python -m compileall -q src tests
 uv run flet run src/main.py
 ```
@@ -232,7 +258,7 @@ uv run flet run src/main.py
 Resultado relevante de pruebas:
 
 ```text
-28 passed
+48 passed
 ```
 
 La aplicación inició sin excepciones. Las pruebas comprueban que los tres

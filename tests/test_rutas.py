@@ -1,4 +1,4 @@
-from unittest.mock import Mock
+from unittest.mock import Mock, call
 
 import pytest
 
@@ -70,5 +70,7 @@ def test_navegador_traduce_intenciones_a_rutas_de_flet() -> None:
     navegador.ir_a_destino(DestinoPrincipal.CITAS)
     navegador.abrir(RutaSecundaria.SOLICITAR_CITA)
 
-    page.go.assert_called_once_with("/citas")
-    page.navigate.assert_called_once_with("/citas/solicitar")
+    assert page.navigate.call_args_list == [
+        call("/citas"),
+        call("/citas/solicitar"),
+    ]

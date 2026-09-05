@@ -3,6 +3,7 @@ from collections.abc import Mapping
 import flet as ft
 
 from app.navegacion import DestinoPrincipal, EstadoNavegacion
+from app.navegador_pila import NavegadorAplicacion
 from app.rutas import (
     RutaSecundaria,
     destino_principal,
@@ -29,6 +30,7 @@ class AplicacionMovil:
         estado_navegacion: EstadoNavegacion,
         vistas: Mapping[DestinoPrincipal, VistaPrincipal],
         pantallas: Mapping[RutaSecundaria, PantallaSecundaria],
+        navegador: NavegadorAplicacion,
     ) -> None:
         self._validar_vistas(vistas)
         self._validar_pantallas(pantallas)
@@ -40,8 +42,9 @@ class AplicacionMovil:
         self._area_principal = ft.SafeArea(content=self._contenido, expand=True)
         self._barra_navegacion = BarraNavegacion(
             destino_seleccionado=estado_navegacion.destino_actual,
-            al_seleccionar=self.seleccionar_destino,
+            al_seleccionar=navegador.ir_a_destino,
         )
+        self._vista_principal = self._crear_vista_principal()
 
     def iniciar(self) -> None:
         self._page.title = "Clínica San Buenaventura"
@@ -51,49 +54,57 @@ class AplicacionMovil:
         self._page.theme_mode = ft.ThemeMode.LIGHT
         self._page.on_route_change = self._manejar_cambio_ruta
         self._page.on_view_pop = self._manejar_retroceso
-        self._reconstruir_vistas(self._page.route)
-
-    def seleccionar_destino(self, destino: DestinoPrincipal) -> None:
-        self._page.go(ruta_principal(destino))
+        self._page.views[:] = [self._vista_principal]
+        # Un enlace directo no tiene una vista de origen en esta sesión.
+        self._mostrar_destino(destino_principal(self._page.route))
+        self._sincronizar_vistas(self._page.route)
 
     def _manejar_cambio_ruta(self, evento: ft.RouteChangeEvent) -> None:
-        self._reconstruir_vistas(evento.route)
+        self._sincronizar_vistas(evento.route)
 
     async def _manejar_retroceso(self, evento: ft.ViewPopEvent) -> None:
-        if evento.view is None or evento.view not in self._page.views:
+        if len(self._page.views) <= 1 or evento.view is not self._page.views[-1]:
             return
 
-        self._page.views.remove(evento.view)
-        if not self._page.views:
-            return
+        self._page.views.pop()
+        ruta = (
+            ruta_principal(self._estado_navegacion.destino_actual)
+            if len(self._page.views) == 1
+            else self._page.views[-1].route
+        )
+        self._page.update()
+        await self._page.push_route(ruta)
 
-        await self._page.push_route(self._page.views[-1].route)
-
-    def _reconstruir_vistas(self, ruta: str) -> None:
+    def _sincronizar_vistas(self, ruta: str) -> None:
         ruta_normalizada = normalizar_ruta(ruta)
         if ruta_normalizada != ruta:
-            self._page.go(ruta_normalizada)
+            self._page.navigate(ruta_normalizada)
             return
 
-        destino = destino_principal(ruta)
-        self._estado_navegacion.seleccionar(destino)
-        self._barra_navegacion.seleccionar(destino)
-        self._mostrar_vista_actual()
-
-        self._page.views.clear()
-        self._page.views.append(self._crear_vista_principal(destino))
-
         secundaria = ruta_secundaria(ruta)
-        if secundaria is not None:
-            self._page.views.append(
-                self._crear_vista_secundaria(self._pantallas[secundaria])
-            )
+        if secundaria is None:
+            del self._page.views[1:]
+            self._mostrar_destino(destino_principal(ruta))
+        else:
+            self._apilar_pantalla(secundaria)
 
         self._page.update()
 
-    def _crear_vista_principal(self, destino: DestinoPrincipal) -> ft.View:
+    def _apilar_pantalla(self, ruta: RutaSecundaria) -> None:
+        for indice, vista in enumerate(self._page.views):
+            if vista.route == ruta.value:
+                del self._page.views[indice + 1 :]
+                return
+
+        self._page.views.append(
+            self._crear_vista_secundaria(self._pantallas[ruta])
+        )
+
+    def _crear_vista_principal(self) -> ft.View:
         return ft.View(
-            route=ruta_principal(destino),
+            # Flet 0.86.5 usa View.route como clave del Navigator de Flutter.
+            # Debe ser estable para cambiar de pestaña sin transición de pila.
+            route="/",
             controls=[self._area_principal],
             navigation_bar=self._barra_navegacion.control,
             bgcolor=COLOR_FONDO,
@@ -119,8 +130,9 @@ class AplicacionMovil:
             padding=0,
         )
 
-    def _mostrar_vista_actual(self) -> None:
-        destino = self._estado_navegacion.destino_actual
+    def _mostrar_destino(self, destino: DestinoPrincipal) -> None:
+        self._estado_navegacion.seleccionar(destino)
+        self._barra_navegacion.seleccionar(destino)
         self._contenido.content = self._vistas[destino].control
 
     @staticmethod
@@ -146,6 +158,12 @@ class AplicacionMovil:
         rutas_esperadas = set(RutaSecundaria)
         rutas_recibidas = set(pantallas)
         if rutas_recibidas == rutas_esperadas:
+            for ruta, pantalla in pantallas.items():
+                if pantalla.ruta is not ruta:
+                    raise ValueError(
+                        f"La pantalla registrada en {ruta.value} declara "
+                        f"la ruta {pantalla.ruta.value}"
+                    )
             return
 
         faltantes = rutas_esperadas - rutas_recibidas
